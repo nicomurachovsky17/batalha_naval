@@ -56,7 +56,7 @@ for i in range(len(nomes)):
                 print("Esta posição não está válida!")
 
 
-# Frota padrão do oponente
+# Posicionamento padrão da frota do oponente
 frota_oponente = {
     "porta-aviões": [
         [[9, 1], [9, 2], [9, 3], [9, 4]]
@@ -83,13 +83,18 @@ frota_oponente = {
 tabuleiro_jogador = posiciona_frota(frota)
 tabuleiro_oponente = posiciona_frota(frota_oponente)
 
-total_navios_oponente = 0
+total_navios = 0
+
 for nome_navio in frota_oponente:
-    total_navios_oponente += len(frota_oponente[nome_navio])
+    total_navios += len(frota_oponente[nome_navio])
 
 total_navios_jogador = 0
+
 for nome_navio in frota:
     total_navios_jogador += len(frota[nome_navio])
+
+# Posições que o oponente já atacou
+posicoes_ja_sorteadas = []
 
 
 # Loop principal do jogo
@@ -125,25 +130,30 @@ while jogando:
         tabuleiro_oponente, linha, coluna
     )
 
-    if afundados(frota_oponente, tabuleiro_oponente) == total_navios_oponente:
+    if afundados(frota_oponente, tabuleiro_oponente) == total_navios:
         print("Parabéns! Você derrubou todos os navios do seu oponente!")
         jogando = False
 
     else:
         # Jogada do oponente
-        linha_oponente = random.randint(0, 9)
-        coluna_oponente = random.randint(0, 9)
+        posicao_valida_oponente = False
 
-        while tabuleiro_jogador[linha_oponente][coluna_oponente] in ["X", "-"]:
-            linha_oponente = random.randint(0, 9)
-            coluna_oponente = random.randint(0, 9)
+        while not posicao_valida_oponente:
+            linha_op = random.randint(0, 9)
+            coluna_op = random.randint(0, 9)
+
+            if [linha_op, coluna_op] in posicoes_ja_sorteadas:
+                continue
+
+            posicoes_ja_sorteadas.append([linha_op, coluna_op])
+            posicao_valida_oponente = True
 
         print(
-            f"Seu oponente está atacando na linha {linha_oponente} e coluna {coluna_oponente}"
+            f"Seu oponente está atacando na linha {linha_op} e coluna {coluna_op}"
         )
 
         tabuleiro_jogador = faz_jogada(
-            tabuleiro_jogador, linha_oponente, coluna_oponente
+            tabuleiro_jogador, linha_op, coluna_op
         )
 
         if afundados(frota, tabuleiro_jogador) == total_navios_jogador:
